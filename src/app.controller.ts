@@ -9,9 +9,4 @@ export class AppController {
   getServerStatus(): object {
     return this.appService.getServerStatus();
   }
-
-  @Post() 
-  send() {
-    return this.appService.send()
-  }
 }
