@@ -1,6 +1,7 @@
 interface IENV {
   NODE_ENVIRONMENT: 'local' | 'docker' | 'dev' | 'staging' | 'prod';
   APP_PORT: number;
+  APP_KEY: string;
   POSTGRES_USER: string;
   POSTGRES_HOST_DOCKER: string;
   POSTGRES_PASSWORD: string;

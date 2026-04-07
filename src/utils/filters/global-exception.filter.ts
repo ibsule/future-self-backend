@@ -14,12 +14,14 @@ export default class GlobalExceptionsHandler implements ExceptionFilter {
 
     this.logger.log(exception);
 
-    message = exception?.response?.message || exception.message || 'Internal server error.';
+    message =
+      exception?.response?.message ||
+      exception.message ||
+      'Internal server error.';
 
-    return response.json({
-      statusCode: status,
+    return response.status(status).json({
       message: message.toString(),
-      error: {},
+      error: exception?.response?.error
     });
   }
 }

@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { hashString } from 'src/utils/string.utils';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {}
+
+  async create(data: CreateUserDto) {
+    // Check if user already exists
+    const existingUser = await this.userRepository.findOne({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('user with this email already exists.');
+    }
+
+    const user = new User();
+    user.first_name = data.first_name;
+    user.last_name = data.last_name;
+    user.email = data.email;
+    user.password_hash = await hashString(data.password);
+
+    await this.userRepository.save(user);
+
+    return {
+      message: 'success',
+      data: {
+        user: {
+          email: user.email,
+        },
+      },
+    };
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }
