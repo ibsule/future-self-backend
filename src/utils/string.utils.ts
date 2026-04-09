@@ -10,3 +10,7 @@ export async function compareStringAndHash(string: string, hash: string) {
   const result = await bcrypt.compare(string, hash);
   return result;
 }
+
+export  function generateUUID(): string {
+  return crypto.randomUUID()
+}

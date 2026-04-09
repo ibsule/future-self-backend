@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Message from the past</title>
+  </head>
+
+  <body style='margin:0; padding:0; background-color:#f4efe6;'>
+
+    <table width='100%' cellpadding='0' cellspacing='0' border='0'>
+      <tr>
+        <td align='center' style='padding:40px 20px;'>
+
+          <!-- Letter Container -->
+          <table
+            width='600'
+            cellpadding='0'
+            cellspacing='0'
+            border='0'
+            style="background:#fffdf8; border-radius:8px; padding:40px 30px; box-shadow:0 4px 12px rgba(0,0,0,0.08); font-family: 'Courier New', Georgia, 'Times New Roman', monospace, serif; color:#3a3a3a;"
+          >
+            <!-- Header -->
+            <tr>
+              <td style='text-align:center; padding-bottom:20px;'>
+                <span
+                  style='font-size:12px; letter-spacing:2px; color:#a89f91;'
+                >
+                  A MESSAGE FROM YOUR PAST
+                </span>
+              </td>
+            </tr>
+
+            <!-- Date -->
+            <tr>
+              <td style='text-align:center; padding-bottom:10px;'>
+                <p style='font-size:13px; color:#9c9488; margin:0;'>
+                  Written on {{writtenOn}}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Title -->
+            <tr>
+              <td style='text-align:center; padding-bottom:25px;'>
+                <h1 style='margin:0; font-size:28px; font-weight:normal;'>
+                  {{title}}
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style='text-align:center; padding-bottom:25px;'>
+                <div
+                  style='width:60px; height:1px; background:#d8d2c8; margin:auto;'
+                ></div>
+              </td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+              <td style='font-size:16px; line-height:1.8; text-align:left;'>
+                {{content}}
+              </td>
+            </tr>
+
+            <!-- Signature -->
+            <tr>
+              <td style='padding-top:40px; font-size:14px; color:#7a7368;'>
+                <br />
+                -
+                {{senderName}}, your past self
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style='padding-top:30px; font-size:12px; color:#b0a89c; text-align:center;'
+              >
+                Sent across time
+              </td>
+            </tr>
+
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

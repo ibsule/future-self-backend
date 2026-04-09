@@ -23,13 +23,12 @@ export class EmailService {
   );
 
   constructor(
-    private readonly httpRequests: HttpRequestsUtil,
-    // private readonly configService: ConfigService<IENV, true>,
+    private readonly httpRequests: HttpRequestsUtil
   ) {}
 
   async send(data: ISendEmail) {
     try {
-      const { email, emailData, subject, template, name } = data;
+      const { recipientEmail: email, emailData, emailSubject: subject, emailTemplate: template, recipientName: name } = data;
 
       const payload = {
         sender: {

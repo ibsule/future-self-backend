@@ -1,34 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { MessengerService } from './messenger.service';
 import { CreateMessengerDto } from './dto/create-messenger.dto';
-import { UpdateMessengerDto } from './dto/update-messenger.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { IReqUser } from 'src/commons/interfaces/req';
 
-@Controller('messenger')
+@Controller('msg')
 export class MessengerController {
   constructor(private readonly messengerService: MessengerService) {}
 
-  @Post()
-  create(@Body() createMessengerDto: CreateMessengerDto) {
-    return this.messengerService.create(createMessengerDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.messengerService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messengerService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessengerDto: UpdateMessengerDto) {
-    return this.messengerService.update(+id, updateMessengerDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messengerService.remove(+id);
+  @Post('create')
+  @UseGuards(AuthGuard)
+  create(@Body() data: CreateMessengerDto, @Req() req: IReqUser) {
+    return this.messengerService.create(data, req.user.id);
   }
 }

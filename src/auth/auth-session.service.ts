@@ -1,53 +1,91 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IAuthSession } from './interfaces/auth-session.interface';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthSession } from './entities/auth.entity';
-import { Repository } from 'typeorm';
+import { RedisService } from 'src/redis/redis.service';
+import {
+  AUTH_SESSION_PREFIX,
+  AUTH_SESSION_TTL,
+  USER_SESSIONS_PREFIX,
+} from 'src/constants';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class AuthSessionService {
-  private readonly logger = new Logger(AuthSessionService.name);
-
-  constructor(
-    @InjectRepository(AuthSession)
-    private authSessionRepository: Repository<AuthSession>,
-  ) {}
+  constructor(private readonly redisService: RedisService) {}
 
   async create(data: IAuthSession) {
     try {
-      let authSession = new AuthSession();
-      authSession = {
-        ...authSession,
-        ...data,
-      };
+      const sessionId = nanoid();
 
-      const result = await this.authSessionRepository.save(authSession);
-      return result;
-    } catch (error) {
-      return false;
-    }
-  }
+      const authSessionKey = `${AUTH_SESSION_PREFIX}${sessionId}`;
+      const authSessionValue = JSON.stringify(data);
+      const userSessionKey = `${USER_SESSIONS_PREFIX}${data.userId}`;
+      const userSessionsValue = sessionId;
 
-  async get(user_id: string) {
-    try {
-      const result = await this.authSessionRepository.findOne({
-        where: { user_id },
-        order: {
-          created_at: 'DESC',
-        },
+      await this.redisService.set({
+        key: authSessionKey,
+        value: authSessionValue,
+        ttl: AUTH_SESSION_TTL,
       });
-      return result;
+
+      await this.redisService.addToSet({
+        key: userSessionKey,
+        value: userSessionsValue,
+      });
+
+      return sessionId;
     } catch (error) {
-      return false;
+      return null;
     }
   }
 
-  async delete(user_id: string) {
+  async get(sessionId: string) {
     try {
-      const result = await this.authSessionRepository.delete({ user_id });
-      return result;
+      const key = `${AUTH_SESSION_PREFIX}${sessionId}`;
+      const result = await this.redisService.get({ key });
+      return JSON.parse(result);
     } catch (error) {
-      return false;
+      return null;
+    }
+  }
+
+  async delete(sessionId: string, userId: string) {
+    try {
+      const authSessionKey = `${AUTH_SESSION_PREFIX}${sessionId}`;
+      const userSessionsKey = `${USER_SESSIONS_PREFIX}${userId}`;
+
+      await this.redisService.remove({ keys: [authSessionKey] });
+      await this.redisService.removeFromSet({
+        key: userSessionsKey,
+        value: sessionId,
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async deleteAll(userId: string) {
+    try {
+      const userSessionsKey = `${USER_SESSIONS_PREFIX}${userId}`;
+
+      // Get all session keys associated to user
+      const authSessions = await this.redisService.getMembersInSet({
+        key: userSessionsKey,
+      });
+
+      if (!authSessions) return null;
+
+      // Delete all user auth sessions
+      if (authSessions.length) {
+        const keys = authSessions.map(
+          (sessionId) => `${AUTH_SESSION_PREFIX}${sessionId}`,
+        );
+        await this.redisService.remove({ keys });
+      }
+
+      // Clear the user sessions set
+      await this.redisService.remove({ keys: [userSessionsKey] });
+    } catch (error) {
+      return null;
     }
   }
 }

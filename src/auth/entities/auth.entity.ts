@@ -13,9 +13,6 @@ export class AuthSession {
   @Column()
   user_id: string;
 
-  @Column()
-  user_email: string;
-
   @Column({ nullable: true, default: null })
   account_type: string;
 

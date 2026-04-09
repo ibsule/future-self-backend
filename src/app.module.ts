@@ -9,6 +9,9 @@ import { MessengerModule } from './messenger/messenger.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bullmq';
+import { QUEUE_NAME } from './constants';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -26,10 +29,27 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: config.get('NODE_ENVIRONMENT') === 'prod' ? false : true,
       }),
     }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<IENV, true>) => ({
+        connection: {
+          host: config.get('REDIS_HOST'),
+          port: config.get('REDIS_PORT'),
+        },
+        defaultJobOptions: {
+          removeOnComplete: 1000,
+          removeOnFail: 5000
+        },
+      }),
+    }),
+    BullModule.registerQueueAsync({
+      name: QUEUE_NAME.MESSAGE_TO_FUTURE,
+    }),
     HttpModule,
     MessengerModule,
     AuthModule,
     UserModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService, HttpRequestsUtil, EmailService],
