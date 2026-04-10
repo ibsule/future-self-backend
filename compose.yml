@@ -1,0 +1,9 @@
+name: 'Future Self backend'
+services:
+  future-self-backend:
+    build:
+      context: .
+    container_name: future-self-backend-api
+    restart: unless-stopped
+    ports:
+      - 5010:5001

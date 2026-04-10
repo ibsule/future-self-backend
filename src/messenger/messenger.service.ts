@@ -14,7 +14,6 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import {
   EMAIL_TEMPLATES,
-  MESSAGE_FROM_PAST_DEFAULT_EMAIL_SUBJECT,
   QUEUE_NAME,
 } from 'src/constants';
 import { EmailService } from 'src/email/email.service';
