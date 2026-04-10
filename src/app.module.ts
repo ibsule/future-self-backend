@@ -17,7 +17,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', 'env.prod'] }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', '.env.prod'] }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<IENV, true>) => ({
