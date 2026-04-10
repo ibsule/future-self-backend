@@ -28,7 +28,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         password: config.get('POSTGRES_PASSWORD'),
         database: config.get('POSTGRES_DB'),
         autoLoadEntities: true,
-        synchronize: config.get('NODE_ENVIRONMENT') === 'prod' ? false : true,
+        synchronize: true,
       }),
     }),
     BullModule.forRootAsync({
