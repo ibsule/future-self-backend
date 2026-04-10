@@ -4,6 +4,7 @@ import GlobalExceptionsHandler from './utils/filters/global-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as morgan from 'morgan';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionsHandler());
   app.useGlobalPipes(new ValidationPipe());
   app.use(morgan('combined'));
+  app.use(helmet());
 
   const config = app.get(ConfigService<IENV, true>);
   const APP_PORT = config.get('APP_PORT');

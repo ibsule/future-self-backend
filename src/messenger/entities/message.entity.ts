@@ -1,5 +1,7 @@
+import { nanoid } from 'nanoid';
 import { User } from 'src/user/entities/user.entity';
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -12,11 +14,17 @@ export class MessageToFuture {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
+  @Column({ unique: true, nullable: true })
+  public_id: string;
+
   @Column()
   title: string;
 
   @Column()
   content: string;
+
+  @Column({ nullable: true })
+  html: string;
 
   @Column()
   send_at: Date;
@@ -30,4 +38,9 @@ export class MessageToFuture {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @BeforeInsert()
+  generatePublicId() {
+    this.public_id = `msg_${nanoid()}`;
+  }
 }

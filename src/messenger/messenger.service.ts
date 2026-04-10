@@ -109,13 +109,13 @@ export class MessengerService {
 
       const emailTemplate = EMAIL_TEMPLATES.MESSAGE_TO_FUTURE;
 
-      // this.emailService.send({
-      //   recipientEmail,
-      //   recipientName,
-      //   emailSubject,
-      //   emailData,
-      //   emailTemplate,
-      // });
+      this.emailService.send({
+        recipientEmail,
+        recipientName,
+        emailSubject,
+        emailData,
+        emailTemplate,
+      });
 
       message.sent = true;
       this.messageToFutureRepository.save(message);

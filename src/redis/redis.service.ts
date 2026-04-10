@@ -11,11 +11,22 @@ export class RedisService {
   private readonly logger = new Logger(RedisService.name);
 
   constructor(private readonly configService: ConfigService<IENV, true>) {
-    this.redisUrl = `redis://${this.configService.get('REDIS_HOST')}:${this.configService.get('REDIS_PORT')}`;
+    const redisUser = this.configService.get('REDIS_USER');
+    const redisPassword = this.configService.get('REDIS_PASSWORD');
+    const redisHost = this.configService.get('REDIS_HOST');
+    const redisPort = this.configService.get('REDIS_PORT');
+
+    if (redisUser && redisPassword) {
+      this.redisUrl = `redis://${redisUser}:${redisPassword}@${redisHost}:${redisPort}`;
+    } else {
+      this.redisUrl = `redis://${redisHost}:${redisPort}`;
+    }
+
     this.redisClient = createClient({
       url: this.redisUrl,
       socket: { connectTimeout: 10000 },
     });
+
     this.redisClient
       .connect()
       .then(() => this.logger.log(`Connected to redis successfully.`))

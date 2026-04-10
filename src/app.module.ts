@@ -12,10 +12,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
 import { QUEUE_NAME } from './constants';
 import { RedisModule } from './redis/redis.module';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.local' }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', 'env.prod'] }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<IENV, true>) => ({
@@ -35,15 +37,38 @@ import { RedisModule } from './redis/redis.module';
         connection: {
           host: config.get('REDIS_HOST'),
           port: config.get('REDIS_PORT'),
+          username: config.get('REDIS_USER'),
+          password: config.get('REDIS_PASSWORD'),
         },
         defaultJobOptions: {
           removeOnComplete: 1000,
-          removeOnFail: 5000
+          removeOnFail: 5000,
+          attempts: 30,
+          backoff: {
+            type: 'fixed',
+            delay: 60000,
+          },
         },
       }),
     }),
     BullModule.registerQueueAsync({
       name: QUEUE_NAME.MESSAGE_TO_FUTURE,
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<IENV, true>) => ({
+        errorMessage: 'Too many requests. Try again after some time.',
+        throttlers:
+          config.get('ENABLE_RATE_LIMITING') === 'true'
+            ? [
+                {
+                  ttl: 60000,
+                  limit: 60,
+                },
+              ]
+            : [],
+      }),
     }),
     HttpModule,
     MessengerModule,
@@ -52,6 +77,14 @@ import { RedisModule } from './redis/redis.module';
     RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HttpRequestsUtil, EmailService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    AppService,
+    HttpRequestsUtil,
+    EmailService,
+  ],
 })
 export class AppModule {}
