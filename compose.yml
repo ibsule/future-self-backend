@@ -1,8 +1,7 @@
 name: 'Future Self backend'
 services:
   future-self-backend:
-    build:
-      context: .
+    image: ghcr.io/ibsule/future-self-backend:latest
     container_name: future-self-backend-api
     restart: unless-stopped
     ports:
