@@ -53,7 +53,7 @@ export class AuthService {
     );
 
     return {
-      message: 'success',
+      message: 'login successful',
       data: {
         token,
       },
