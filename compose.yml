@@ -4,5 +4,7 @@ services:
     image: ghcr.io/ibsule/future-self-backend:latest
     container_name: future-self-backend-api
     restart: unless-stopped
+    env_file:
+      .env
     ports:
       - 5010:5001
