@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  GoneException,
   Injectable,
   Logger,
   NotFoundException,
@@ -12,12 +11,11 @@ import { MessageToFuture } from './entities/message.entity';
 import { Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import {
-  EMAIL_TEMPLATES,
-  QUEUE_NAME,
-} from 'src/constants';
+import { EMAIL_TEMPLATES, QUEUE_NAME } from 'src/constants';
 import { EmailService } from 'src/email/email.service';
 import { User } from 'src/user/entities/user.entity';
+import { parseToTimestamp } from 'src/utils/time.util';
+
 @Injectable()
 export class MessengerService {
   constructor(
@@ -32,15 +30,31 @@ export class MessengerService {
   private readonly logger = new Logger();
 
   async create(data: CreateMessengerDto, user_id: string) {
-    // Validate that date 'send_at' is a future date
+    // Validate that only one of 'sent_at' and 'send_after' can be provided
+    const onlyOne = Number(!!data.send_at) ^ Number(!!data.send_after);
+
+    if (!onlyOne) {
+      throw new BadRequestException(
+        "only provide value for either 'send_at' or 'send_after', not both.",
+      );
+    }
+
+    // Validate that 'send_at' is a future date
     const isDateFuture = new Date(data.send_at).getTime() > Date.now();
 
-    if (!isDateFuture) {
-      throw new BadRequestException('send_at should be a time in the future.');
+    if (data.send_at && !isDateFuture) {
+      throw new BadRequestException('send_at must be a time in the future.');
+    }
+
+    let sendAfterTimestamp;
+
+    if (data.send_after) {
+      sendAfterTimestamp = parseToTimestamp(data.send_after);
     }
 
     const message = this.messageToFutureRepository.create({
       ...data,
+      send_at: data.send_at ?? new Date(sendAfterTimestamp),
       created_by: user_id,
     });
 
@@ -52,7 +66,8 @@ export class MessengerService {
       );
     }
 
-    const delay = new Date(data.send_at).getTime() - Date.now();
+    const delay =
+      new Date(data.send_at ?? sendAfterTimestamp).getTime() - Date.now();
 
     // Add message to queue
     const job = await this.messageToFutureQueue.add(
@@ -65,7 +80,7 @@ export class MessengerService {
 
     if (!job) {
       throw new UnprocessableEntityException(
-        'failed to add message to queue. please try again',
+        'failed to add message. please try again',
       );
     }
 
@@ -108,13 +123,13 @@ export class MessengerService {
 
       const emailTemplate = EMAIL_TEMPLATES.MESSAGE_TO_FUTURE;
 
-      this.emailService.send({
-        recipientEmail,
-        recipientName,
-        emailSubject,
-        emailData,
-        emailTemplate,
-      });
+      // this.emailService.send({
+      //   recipientEmail,
+      //   recipientName,
+      //   emailSubject,
+      //   emailData,
+      //   emailTemplate,
+      // });
 
       message.sent = true;
       this.messageToFutureRepository.save(message);
