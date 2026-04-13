@@ -15,6 +15,7 @@ import { EMAIL_TEMPLATES, QUEUE_NAME } from 'src/constants';
 import { EmailService } from 'src/email/email.service';
 import { User } from 'src/user/entities/user.entity';
 import { parseToTimestamp } from 'src/utils/time.util';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MessengerService {
@@ -25,6 +26,7 @@ export class MessengerService {
     @InjectQueue(QUEUE_NAME.MESSAGE_TO_FUTURE)
     private messageToFutureQueue: Queue,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService<IENV, true>,
   ) {}
 
   private readonly logger = new Logger();
@@ -123,13 +125,15 @@ export class MessengerService {
 
       const emailTemplate = EMAIL_TEMPLATES.MESSAGE_TO_FUTURE;
 
-      this.emailService.send({
-        recipientEmail,
-        recipientName,
-        emailSubject,
-        emailData,
-        emailTemplate,
-      });
+      if (!(this.configService.get('DONT_SEND_EMAIL', 'false') === 'true')) {
+        this.emailService.send({
+          recipientEmail,
+          recipientName,
+          emailSubject,
+          emailData,
+          emailTemplate,
+        });
+      }
 
       message.sent = true;
       this.messageToFutureRepository.save(message);
