@@ -3,7 +3,8 @@ interface IENV {
   NODE_ENVIRONMENT: 'local' | 'docker' | 'dev' | 'staging' | 'prod';
   APP_PORT: number;
   APP_KEY: string;
-  ENABLE_RATE_LIMITING: string
+  ENABLE_RATE_LIMITING: string;
+  DONT_SEND_EMAIL: string;
   
   // Redis
   REDIS_HOST: string;
