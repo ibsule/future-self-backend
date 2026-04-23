@@ -10,14 +10,17 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
-import { QUEUE_NAME } from './constants';
+import { ENVIRONMENT, QUEUE_NAME } from './constants';
 import { RedisModule } from './redis/redis.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', '.env.prod'] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env.prod'],
+    }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<IENV, true>) => ({
@@ -29,7 +32,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         database: config.get('POSTGRES_DB'),
         autoLoadEntities: true,
         synchronize: true,
-        ssl: true
+        ssl:
+          config.get('NODE_ENVIRONMENT') == ENVIRONMENT.PRODUCTION
+            ? true
+            : false,
       }),
     }),
     BullModule.forRootAsync({
