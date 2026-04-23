@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { IAuthSession } from './interfaces/auth-session.interface';
 import { RedisService } from 'src/redis/redis.service';
 import {
@@ -21,16 +21,20 @@ export class AuthSessionService {
       const userSessionKey = `${USER_SESSIONS_PREFIX}${data.userId}`;
       const userSessionsValue = sessionId;
 
-      await this.redisService.set({
+      const authSession = await this.redisService.set({
         key: authSessionKey,
         value: authSessionValue,
         ttl: AUTH_SESSION_TTL,
       });
 
-      await this.redisService.addToSet({
+      if (!authSession) throw new UnprocessableEntityException();
+
+      const userSession = await this.redisService.addToSet({
         key: userSessionKey,
         value: userSessionsValue,
       });
+
+      if (!userSession) throw new UnprocessableEntityException();
 
       return sessionId;
     } catch (error) {
