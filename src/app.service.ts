@@ -5,9 +5,9 @@ import { EmailService } from './email/email.service';
 export class AppService {
   getServerStatus(): object {
     return {
-      status: 'ok',
+      name: 'futureself-api',
+      status: 'running',
       current_time: new Date().toString(),
-      message: 'server is running',
     };
   }
 }
