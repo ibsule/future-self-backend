@@ -6,6 +6,7 @@ export const AUTH_SESSION_TTL = 60 * 60 * 24; // 1 day
 
 export enum ENVIRONMENT {
   LOCAL = 'local',
+  DOCKER = 'docker',
   DEVELOPMENT = 'development',
   STAGING = 'staging',
   PRODUCTION = 'production',
