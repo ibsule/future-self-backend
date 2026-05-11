@@ -44,7 +44,7 @@ export class AuthGuard implements CanActivate {
       this.configService.get('APP_KEY', { infer: true }),
     ) as any;
 
-    if (!decodedToken)
+    if (!decodedToken)  
       throw new UnauthorizedException(
         'Invalid auth token or token has expired, please login to get new token.',
       );
@@ -55,7 +55,7 @@ export class AuthGuard implements CanActivate {
     const authSession = await this.authSessionService.get(sessionId);
 
     if (!authSession || authSession?.authTokenVersion != authTokenVersion) {
-      throw new UnauthorizedException('please login again.');
+      throw new UnauthorizedException('Please login again.');
     }
 
     request['user'] = {
