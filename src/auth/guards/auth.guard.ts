@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
 
     if (!bearerToken)
       throw new UnauthorizedException(
-        'please provide Bearer token in Authorization header.',
+        'Please provide Bearer token in Authorization header.',
       );
 
     const token = bearerToken.split(' ')[1];
