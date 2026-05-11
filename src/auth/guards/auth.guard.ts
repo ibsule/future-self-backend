@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
 
     if (!decodedToken)
       throw new UnauthorizedException(
-        'invalid auth token or token has expired, please login to get new token.',
+        'Invalid auth token or token has expired, please login to get new token.',
       );
 
     const sessionId = decodedToken?.sessionId;
