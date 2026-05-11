@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
 
     if (!token)
       throw new UnauthorizedException(
-        'auth token not found in Authorization header.',
+        'Auth token not found in Authorization header.',
       );
 
     const decodedToken = decodeJwtToken(
