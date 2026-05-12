@@ -29,14 +29,14 @@ export class AuthGuard implements CanActivate {
 
     if (!bearerToken)
       throw new UnauthorizedException(
-        'please provide Bearer token in Authorization header.',
+        'Please provide Bearer token in Authorization header.',
       );
 
     const token = bearerToken.split(' ')[1];
 
     if (!token)
       throw new UnauthorizedException(
-        'auth token not found in Authorization header.',
+        'Auth token not found in Authorization header.',
       );
 
     const decodedToken = decodeJwtToken(
@@ -44,9 +44,9 @@ export class AuthGuard implements CanActivate {
       this.configService.get('APP_KEY', { infer: true }),
     ) as any;
 
-    if (!decodedToken)
+    if (!decodedToken)  
       throw new UnauthorizedException(
-        'invalid auth token or token has expired, please login to get new token.',
+        'Invalid auth token or token has expired, please login to get new token.',
       );
 
     const sessionId = decodedToken?.sessionId;
@@ -55,7 +55,7 @@ export class AuthGuard implements CanActivate {
     const authSession = await this.authSessionService.get(sessionId);
 
     if (!authSession || authSession?.authTokenVersion != authTokenVersion) {
-      throw new UnauthorizedException('please login again.');
+      throw new UnauthorizedException('Please login again.');
     }
 
     request['user'] = {
