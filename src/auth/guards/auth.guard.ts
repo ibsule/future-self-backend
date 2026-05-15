@@ -25,14 +25,24 @@ export class AuthGuard implements CanActivate {
   }
 
   async validateRequest(request: Request): Promise<any> {
-    const bearerToken = request.headers.authorization as string;
+    const authorization = request.headers.authorization;
 
-    if (!bearerToken)
+    if (!authorization)
       throw new UnauthorizedException(
         'Please provide Bearer token in Authorization header.',
       );
 
-    const token = bearerToken.split(' ')[1];
+    const schemeEnd = authorization.indexOf(' ');
+    const scheme =
+      schemeEnd === -1 ? authorization : authorization.slice(0, schemeEnd);
+
+    if (scheme.toLowerCase() !== 'bearer')
+      throw new UnauthorizedException(
+        'Please provide Bearer token in Authorization header.',
+      );
+
+    const token =
+      schemeEnd === -1 ? '' : authorization.slice(schemeEnd + 1).trim();
 
     if (!token)
       throw new UnauthorizedException(
@@ -44,7 +54,7 @@ export class AuthGuard implements CanActivate {
       this.configService.get('APP_KEY', { infer: true }),
     ) as any;
 
-    if (!decodedToken)  
+    if (!decodedToken)
       throw new UnauthorizedException(
         'Invalid auth token or token has expired, please login to get new token.',
       );
