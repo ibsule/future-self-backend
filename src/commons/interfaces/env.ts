@@ -25,4 +25,6 @@ interface IENV {
   EMAIL_SENDER_EMAIL: string;
   BREVO_API_ENDPOINT: string;
   BREVO_API_KEY: string;
+
+  FRONTEND_URL: string;
 }
