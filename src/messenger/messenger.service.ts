@@ -31,6 +31,27 @@ export class MessengerService {
 
   private readonly logger = new Logger();
 
+  async findAllByUser(userId: string) {
+    const messages = await this.messageToFutureRepository.find({
+      where: { created_by: userId },
+      order: { created_at: 'DESC' },
+      select: [
+        'id',
+        'public_id',
+        'title',
+        'content',
+        'send_at',
+        'sent',
+        'created_at',
+      ],
+    });
+
+    return {
+      message: 'success',
+      data: { messages },
+    };
+  }
+
   async create(data: CreateMessengerDto, user_id: string) {
     // Validate that only one of 'sent_at' and 'send_after' can be provided
     const onlyOne = Number(!!data.send_at) ^ Number(!!data.send_after);

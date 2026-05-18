@@ -20,6 +20,13 @@ async function bootstrap() {
   app.use(helmet());
 
   const config = app.get(ConfigService<IENV, true>);
+  const frontendUrl = config.get('FRONTEND_URL') ?? 'http://localhost:5173';
+
+  app.enableCors({
+    origin: frontendUrl,
+    credentials: true,
+  });
+
   const APP_PORT = config.get('APP_PORT');
 
   await app.listen(APP_PORT, () => {

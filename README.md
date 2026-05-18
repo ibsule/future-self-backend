@@ -46,6 +46,8 @@ NestJS API with PostgreSQL (TypeORM), Redis (BullMQ queues), and email via Brevo
    EMAIL_SENDER_EMAIL=noreply@example.com
    BREVO_API_ENDPOINT=https://api.brevo.com/v3
    BREVO_API_KEY=your-brevo-api-key
+
+   FRONTEND_URL=http://localhost:5173
    ```
 
    Adjust `POSTGRES_*` and `REDIS_*` to match your running services. Use a strong `APP_KEY` in any shared or deployed environment.

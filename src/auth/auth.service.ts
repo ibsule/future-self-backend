@@ -111,10 +111,15 @@ export class AuthService {
       '15m',
     ); // Reset password token expires in 15 minutes
 
+    const frontendUrl =
+      this.configService.get('FRONTEND_URL') ?? 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(user.email)}`;
+
     const sentEmail = await this.emailService.send({
       emailData: {
         name: user.first_name,
         token,
+        resetUrl,
       },
       emailTemplate: EMAIL_TEMPLATES.FORGET_PASSWORD,
       recipientEmail: user.email,
