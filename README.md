@@ -1,73 +1,130 @@
-# Future Self API
+# Future Self
 
-NestJS API with PostgreSQL (TypeORM), Redis (BullMQ queues), and email via Brevo.
+I built Future Self as a simple app for writing messages today and receiving them later in my inbox. It uses a NestJS API with a React (Vite) frontend, PostgreSQL for storage, Redis + BullMQ for scheduling and background jobs, and [Brevo](https://www.brevo.com/) for email delivery.
+
+Users can write a message, choose a delivery date, and let the system handle the scheduling and sending automatically.
+
+### Why
+
+Most reminder apps are built around tasks and notifications. I wanted something more personal: a way to leave notes for myself that arrive at the right time.
+
+Sometimes it’s a reflection I want to revisit months later, a message for an important milestone, encouragement before a difficult period, or just context I know I’ll forget with time. Future Self is built around that idea: delayed personal communication instead of productivity tooling.
 
 ## Prerequisites
 
-- **Node.js** 22.x or current LTS (matches the project’s `@types/node` range)
-- **PostgreSQL**
-- **Redis**
-- A **Brevo** account and API key if you plan to send real emails
+- **Node.js** 22.x or current LTS
+- **PostgreSQL** and **Redis** (local install or your own containers)
+- **Brevo** API key only if you want real email (optional locally)
 
 ## Setup
 
-1. **Install dependencies**
+### 1. Postgres and Redis
 
-   ```bash
-   npm install
-   ```
+Run both on the hosts/ports you’ll put in `.env.local`. Defaults below assume `127.0.0.1`.
 
-2. **Environment variables**
+### 2. Backend
 
-   The app loads `.env.local` first, then `.env.prod` ([`app.module.ts`](src/app.module.ts)). Create a `.env.local` in the project root for local development.
+```bash
+npm install
+```
 
-   Required variables are defined in [`src/commons/interfaces/env.ts`](src/commons/interfaces/env.ts). Example for local development:
+Create `.env.local` in the repo root. The app loads `.env.local` first, then `.env.prod` (`[app.module.ts](src/app.module.ts)`). Required keys: `[src/commons/interfaces/env.ts](src/commons/interfaces/env.ts)`.
 
-   ```env
-   NODE_ENVIRONMENT=local
-   APP_PORT=3000
-   APP_KEY=your-secret-signing-key-change-me
-   ENABLE_RATE_LIMITING=false
-   DONT_SEND_EMAIL=true
+```env
+NODE_ENVIRONMENT=local
+APP_PORT=3000
+APP_KEY=your-secret-signing-key-change-me
+ENABLE_RATE_LIMITING=false
+DONT_SEND_EMAIL=true
 
-   REDIS_HOST=127.0.0.1
-   REDIS_PORT=6379
-   REDIS_USER=
-   REDIS_PASSWORD=
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_USER=
+REDIS_PASSWORD=
 
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-   POSTGRES_DB=future_self
-   POSTGRES_HOST=127.0.0.1
-   POSTGRES_PORT=5432
-   POSTGRES_HOST_DOCKER=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=future_self
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_HOST_DOCKER=postgres
 
-   EMAIL_SENDER_NAME=Future Self
-   EMAIL_SENDER_EMAIL=noreply@example.com
-   BREVO_API_ENDPOINT=https://api.brevo.com/v3
-   BREVO_API_KEY=your-brevo-api-key
+EMAIL_SENDER_NAME=Future Self
+EMAIL_SENDER_EMAIL=noreply@example.com
+BREVO_API_ENDPOINT=https://api.brevo.com/v3
+BREVO_API_KEY=your-brevo-api-key
 
-   FRONTEND_URL=http://localhost:5173
-   ```
+FRONTEND_URL=http://localhost:5173
+```
 
-   Adjust `POSTGRES_*` and `REDIS_*` to match your running services. Use a strong `APP_KEY` in any shared or deployed environment.
+- `DONT_SEND_EMAIL=true` skips Brevo in dev.
+- `FRONTEND_URL` must match where the Vite app runs (CORS).
+- Use a strong `APP_KEY` outside local.
 
-3. **Start PostgreSQL and Redis** on the hosts and ports you configured (for example with local installs or your own Docker setup).
+```bash
+npm run start:dev
+```
 
-4. **Run the app**
+API listens on `APP_PORT` (log: `Server running on …`).
 
-   ```bash
-   npm run start:dev
-   ```
+### 3. Frontend
 
-   The server listens on the port set by `APP_PORT` (see log: `Server running on …`).
+```bash
+cd frontend
+npm install
+cp .env.example .env
+```
 
-## Other scripts
+Set `VITE_API_URL` to your API origin (no trailing slash):
 
-| Command | Purpose |
-|--------|---------|
-| `npm run build` | Production build |
-| `npm run start:prod` | Run compiled app from `dist` |
-| `npm run lint` | ESLint |
-| `npm run test` | Unit tests |
-| `npm run test:e2e` | E2E tests |
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Must match backend `APP_PORT`.
+
+```bash
+npm run dev
+```
+
+App: [http://localhost:5173](http://localhost:5173) (Vite default in `[frontend/vite.config.ts](frontend/vite.config.ts)`).
+
+## Local dev
+
+Two terminals:
+
+
+| Terminal | Directory   | Command             |
+| -------- | ----------- | ------------------- |
+| API      | repo root   | `npm run start:dev` |
+| UI       | `frontend/` | `npm run dev`       |
+
+
+Register, compose a message, pick a future delivery time. With `DONT_SEND_EMAIL=true`, the queue still runs; email is skipped.
+
+## Scripts
+
+**API** (repo root)
+
+
+| Command              | Purpose               |
+| -------------------- | --------------------- |
+| `npm run start:dev`  | Dev server with watch |
+| `npm run build`      | Production build      |
+| `npm run start:prod` | Run `dist/`           |
+| `npm run lint`       | ESLint                |
+| `npm run test`       | Unit tests            |
+| `npm run test:e2e`   | E2E tests             |
+
+
+**Frontend** (`frontend/`)
+
+
+| Command           | Purpose                        |
+| ----------------- | ------------------------------ |
+| `npm run dev`     | Vite dev server                |
+| `npm run build`   | Typecheck + production build   |
+| `npm run preview` | Serve production build locally |
+| `npm run lint`    | ESLint                         |
+
+
