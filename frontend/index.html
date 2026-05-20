@@ -3,6 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var root = document.documentElement;
+        var body = document.body;
+        root.style.backgroundColor = prefersDark ? '#0c0c0c' : '#f4f1ea';
+        root.style.color = prefersDark ? '#e8e4dc' : '#121212';
+        if (body) {
+          body.style.backgroundColor = prefersDark ? '#0c0c0c' : '#f4f1ea';
+          body.style.color = prefersDark ? '#e8e4dc' : '#121212';
+        } else {
+          document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+              document.body.style.backgroundColor = prefersDark ? '#0c0c0c' : '#f4f1ea';
+              document.body.style.color = prefersDark ? '#e8e4dc' : '#121212';
+            },
+            { once: true }
+          );
+        }
+      })();
+    </script>
     <title>Future Self</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
