@@ -10,6 +10,8 @@ Most reminder apps are built around tasks and notifications. I wanted something 
 
 Sometimes it’s a reflection I want to revisit months later, a message for an important milestone, encouragement before a difficult period, or just context I know I’ll forget with time. Future Self is built around that idea: delayed personal communication instead of productivity tooling.
 
+> **Note** This repository is still in active development
+
 ## Prerequisites
 
 - **Node.js** 22.x or current LTS
