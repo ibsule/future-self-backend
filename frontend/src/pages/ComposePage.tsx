@@ -52,7 +52,11 @@ export function ComposePage() {
     try {
       const payload =
         mode === 'relative'
-          ? { title: title.trim(), content: content.trim(), send_after: sendAfter.trim() }
+          ? {
+              title: title.trim(),
+              content: content.trim(),
+              send_after: sendAfter.trim(),
+            }
           : {
               title: title.trim(),
               content: content.trim(),
@@ -64,7 +68,9 @@ export function ComposePage() {
       setTitle('');
       setContent('');
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not schedule letter.');
+      setError(
+        err instanceof ApiError ? err.message : 'Could not schedule letter.',
+      );
     } finally {
       setLoading(false);
     }
