@@ -1,6 +1,6 @@
-# Future Self
+# Futureself
 
-I built Future Self as a simple app for writing messages today and receiving them later in my inbox. It uses a NestJS API with a React (Vite) frontend, PostgreSQL for storage, Redis + BullMQ for scheduling and background jobs, and [Brevo](https://www.brevo.com/) for email delivery.
+I built Futureself as a simple app for writing messages today and receiving them later in my inbox. It uses a NestJS API with a React (Vite) frontend, PostgreSQL for storage, Redis + BullMQ for scheduling and background jobs, and [Brevo](https://www.brevo.com/) for email delivery.
 
 Users can write a message, choose a delivery date, and let the system handle the scheduling and sending automatically.
 
@@ -8,7 +8,7 @@ Users can write a message, choose a delivery date, and let the system handle the
 
 Most reminder apps are built around tasks and notifications. I wanted something more personal: a way to leave notes for myself that arrive at the right time.
 
-Sometimes it’s a reflection I want to revisit months later, a message for an important milestone, encouragement before a difficult period, or just context I know I’ll forget with time. Future Self is built around that idea: delayed personal communication instead of productivity tooling.
+Sometimes it’s a reflection I want to revisit months later, a message for an important milestone, encouragement before a difficult period, or just context I know I’ll forget with time. Futureself is built around that idea: delayed personal communication instead of productivity tooling.
 
 > **Note** This repository is still in active development
 
@@ -51,7 +51,7 @@ POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5432
 POSTGRES_HOST_DOCKER=postgres
 
-EMAIL_SENDER_NAME=Future Self
+EMAIL_SENDER_NAME=Futureself
 EMAIL_SENDER_EMAIL=noreply@example.com
 BREVO_API_ENDPOINT=https://api.brevo.com/v3
 BREVO_API_KEY=your-brevo-api-key

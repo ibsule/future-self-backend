@@ -1,4 +1,4 @@
-name: 'Future Self backend'
+name: 'Futureself backend'
 services:
   future-self-backend:
     image: ghcr.io/ibsule/future-self-backend:latest
