@@ -1,8 +1,8 @@
 name: 'Futureself backend'
 services:
   future-self-backend:
-    image: ghcr.io/ibsule/future-self-backend:latest
-    container_name: future-self-backend-api
+    image: ghcr.io/ibsule/futureself:latest
+    container_name: futureself-backend-api
     restart: unless-stopped
     env_file:
       - .env
