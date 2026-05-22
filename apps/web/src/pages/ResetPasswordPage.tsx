@@ -56,7 +56,7 @@ export function ResetPasswordPage() {
         <PageHeader
           eyebrow="Complete"
           title="Password updated"
-          subtitle="Your Future Self account is ready. You may sign in with your new password."
+          subtitle="Your Futureself account is ready. You may sign in with your new password."
         />
         <Alert tone="success">
           Password reset successful. You can close this page and sign in.

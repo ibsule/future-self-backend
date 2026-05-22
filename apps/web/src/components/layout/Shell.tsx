@@ -16,7 +16,7 @@ export function Shell() {
           to={isAuthed ? '/compose' : '/'}
           className="font-serif text-xl tracking-tight"
         >
-          Future Self
+          Futureself
         </Link>
         <nav className="flex items-center gap-6" aria-label="Main">
           {isAuthed ? (
