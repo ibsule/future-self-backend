@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@futureself/web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build"
   },
   "dependencies": {
+    "@futureself/shared": "workspace:*",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.1"

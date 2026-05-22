@@ -10,7 +10,7 @@ export function HomePage() {
       <PageHeader
         eyebrow="A letter to tomorrow"
         title="Write who you were. Read it when you've become someone else."
-        subtitle="Future Self holds your words until the moment you choose — then delivers them to your inbox like a note from the past."
+        subtitle="Futureself holds your words until the moment you choose — then delivers them to your inbox like a note from the past."
       />
       <div className="flex flex-wrap gap-4">
         {isAuthed ? (
