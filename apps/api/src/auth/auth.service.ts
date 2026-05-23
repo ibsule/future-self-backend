@@ -12,7 +12,7 @@ import { User } from 'src/user/entities/user.entity';
 import { createJwtToken, decodeJwtToken } from 'src/utils/jwt.utils';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from 'src/email/email.service';
-import { EMAIL_TEMPLATES } from 'src/constants';
+import { EMAIL_TEMPLATES, ENVIRONMENT } from 'src/constants';
 
 @Injectable()
 export class AuthService {
@@ -26,11 +26,11 @@ export class AuthService {
   async login({ email, password }) {
     const user = await this.userRepository.findOne({ where: { email } });
 
-    if (!user) throw new NotFoundException('user with this email not found.');
+    if (!user) throw new NotFoundException('User with this email not found.');
 
     const isMatch = await compareStringAndHash(password, user.password_hash);
 
-    if (!isMatch) throw new BadRequestException('invalid password.');
+    if (!isMatch) throw new BadRequestException('Invalid assword.');
 
     const sessionId = await this.authSessionService.create({
       userId: user.id,
@@ -38,7 +38,7 @@ export class AuthService {
     });
 
     if (!sessionId) {
-      throw new UnprocessableEntityException('login failed. please try again.');
+      throw new UnprocessableEntityException('Login failed. Please try again.');
     }
 
     const payload = {
@@ -64,7 +64,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
-      throw new BadRequestException('user not found. please login again.');
+      throw new BadRequestException('User not found. Please login again.');
     }
 
     await this.authSessionService.delete(sessionId, userId);
@@ -82,7 +82,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
-      throw new BadRequestException('user not found. please login again.');
+      throw new BadRequestException('User not found. Please login again.');
     }
 
     await this.authSessionService.deleteAll(userId);
@@ -100,7 +100,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
-      throw new BadRequestException('user not found');
+      throw new BadRequestException('User not found');
     }
 
     const tokenPayload = { userId: user.id };
@@ -111,8 +111,17 @@ export class AuthService {
       '15m',
     ); // Reset password token expires in 15 minutes
 
+    const nodeEnv = this.configService.get('NODE_ENVIRONMENT');
+    const frontendLocalUrl = this.configService.get('FRONTEND_LOCAL_URL');
+    const frontendProdUrl = this.configService.get('FRONTEND_PRODUCTION_URL');
+
     const frontendUrl =
-      this.configService.get('FRONTEND_URL') ?? 'http://localhost:5173';
+      nodeEnv === ENVIRONMENT.LOCAL
+        ? frontendLocalUrl
+        : nodeEnv === ENVIRONMENT.PRODUCTION
+          ? frontendProdUrl
+          : null;
+
     const resetUrl = `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(user.email)}`;
 
     const sentEmail = await this.emailService.send({
@@ -129,12 +138,12 @@ export class AuthService {
 
     if (!sentEmail.messageId) {
       throw new UnprocessableEntityException(
-        'request failed. please try again',
+        'Request failed. Please try again',
       );
     }
 
     return {
-      message: 'reset password link sent to email',
+      message: 'Reset password link sent to email',
     };
   }
 
@@ -148,7 +157,7 @@ export class AuthService {
 
     // if user is not found, throw error
     if (!user) {
-      throw new BadRequestException('user not found. please register again.');
+      throw new BadRequestException('User not found. Please register again.');
     }
 
     const decodedData = decodeJwtToken(
@@ -157,7 +166,7 @@ export class AuthService {
     ) as any;
 
     if (!decodedData || decodedData.userId !== user.id) {
-      throw new BadRequestException('invalid or expired reset password token.');
+      throw new BadRequestException('Invalid or expired reset password token.');
     }
 
     // hash new password
@@ -167,7 +176,7 @@ export class AuthService {
     await this.userRepository.save(user);
 
     return {
-      message: 'password reset successful',
+      message: 'Password reset successful',
     };
   }
 }

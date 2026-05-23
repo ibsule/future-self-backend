@@ -1,10 +1,23 @@
-name: 'Futureself backend'
+name: 'Futureself'
 services:
-  future-self-backend:
-    image: ghcr.io/ibsule/futureself:latest
-    container_name: futureself-backend-api
+  futureself-backend:
+    build: 
+      context: .
+      dockerfile: docker/api.Dockerfile
+    container_name: futureself-api
     restart: unless-stopped
     env_file:
-      - .env
+      - ./apps/api/.env.local
     ports:
       - 5010:5001
+  
+  futureself-web:
+    build: 
+      context: .
+      dockerfile: docker/web.Dockerfile
+    container_name: futureself-web
+    restart: unless-stopped
+    env_file:
+      - ./apps/web/.env
+    ports:
+      - 8010:5173
