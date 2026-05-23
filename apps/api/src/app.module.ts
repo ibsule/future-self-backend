@@ -14,12 +14,14 @@ import { ENVIRONMENT, QUEUE_NAME } from './constants';
 import { RedisModule } from './redis/redis.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { validate } from './commons/env.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.api.local', '.env.api.prod'],
+      validate
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
