@@ -1,10 +1,10 @@
-name: 'Futureself backend'
+name: 'Futureself'
 services:
   futureself-backend:
     build: 
       context: .
       dockerfile: docker/api.Dockerfile
-    container_name: futureself-backend-api
+    container_name: futureself-api
     restart: unless-stopped
     env_file:
       - ./apps/api/.env.local
