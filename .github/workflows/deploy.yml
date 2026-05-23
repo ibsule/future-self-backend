@@ -54,5 +54,7 @@ jobs:
             WEB_IMAGE=ghcr.io/${{ github.repository }}-web:${{ github.sha }}
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             cd ~/deployed_apps/futureself-mono
+            export API_IMAGE=$API_IMAGE
+            export WEB_IMAGE=$WEB_IMAGE
             docker compose pull
-            API_IMAGE=$API_IMAGE WEB_IMAGE=$WEB_IMAGE docker compose up -d --no-deps --force-recreate
+            docker compose up -d --no-deps --force-recreate
