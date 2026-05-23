@@ -7,7 +7,7 @@ services:
     container_name: futureself-api
     restart: unless-stopped
     env_file:
-      - ./apps/api/.env.local
+      - ./apps/api/.env.api.local
     ports:
       - 5010:5001
   
