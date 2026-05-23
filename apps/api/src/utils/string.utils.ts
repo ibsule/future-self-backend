@@ -11,6 +11,6 @@ export async function compareStringAndHash(string: string, hash: string) {
   return result;
 }
 
-export  function generateUUID(): string {
-  return crypto.randomUUID()
+export function generateUUID(): string {
+  return crypto.randomUUID();
 }

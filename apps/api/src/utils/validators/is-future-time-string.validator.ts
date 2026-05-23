@@ -6,7 +6,7 @@ import {
 import * as dayjs from 'dayjs';
 
 export function IsFutureTimeString(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isFutureTimeString',
       target: object.constructor,

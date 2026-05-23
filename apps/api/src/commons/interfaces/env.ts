@@ -1,10 +1,6 @@
 interface IENV {
   // App
-  NODE_ENVIRONMENT:
-    | 'local'
-    | 'docker'
-    | 'staging'
-    | 'production';
+  NODE_ENVIRONMENT: 'local' | 'docker' | 'staging' | 'production';
   APP_PORT: number;
   APP_KEY: string;
   ENABLE_RATE_LIMITING: string;

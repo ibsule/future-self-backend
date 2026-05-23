@@ -1,7 +1,4 @@
-import {
-  getFutureTimeWithoutLeap,
-  parseToTimestamp,
-} from './time.util';
+import { getFutureTimeWithoutLeap, parseToTimestamp } from './time.util';
 
 describe('parseToTimestamp', () => {
   afterEach(() => {
@@ -59,7 +56,9 @@ describe('getFutureTimeWithoutLeap', () => {
     const calendar = parseToTimestamp('1y');
 
     expect(withoutLeap).toBe(Date.now() + 365 * 24 * 60 * 60 * 1000);
-    expect(new Date(withoutLeap).toISOString()).toBe('2024-02-29T12:00:00.000Z');
+    expect(new Date(withoutLeap).toISOString()).toBe(
+      '2024-02-29T12:00:00.000Z',
+    );
     expect(calendar - withoutLeap).toBe(24 * 60 * 60 * 1000);
   });
 });

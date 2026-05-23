@@ -15,7 +15,7 @@ export class RedisService {
     const redisPassword = this.configService.get('REDIS_PASSWORD');
     const redisHost = this.configService.get('REDIS_HOST');
     const redisPort = this.configService.get('REDIS_PORT');
-    
+
     if (redisUser && redisPassword) {
       this.redisUrl = `redis://${redisUser}:${redisPassword}@${redisHost}:${redisPort}`;
     } else {
