@@ -21,15 +21,26 @@ jobs:
       - name: Login to GHCR
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # 3. Build image
-      - name: Build Docker image
+      # 3. Build images
+      - name: Build API image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+          docker build \
+            -f docker/api.Dockerfile \
+            -t ghcr.io/${{ github.repository }}-api:${{ github.sha }} \
+            .
 
-      # 4. Push image
-      - name: Push image
+      - name: Build Web image
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker build \
+            -f docker/web.Dockerfile \
+            -t ghcr.io/${{ github.repository }}-web:${{ github.sha }} \
+            .
+
+      # 4. Push images
+      - name: Push images
+        run: |
+          docker push ghcr.io/${{ github.repository }}-api:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}-web:${{ github.sha }}
 
       # 5. Deploy on VPS
       - name: Deploy via SSH
@@ -39,8 +50,9 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
+            API_IMAGE=ghcr.io/${{ github.repository }}-api:${{ github.sha }}
+            WEB_IMAGE=ghcr.io/${{ github.repository }}-web:${{ github.sha }}
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            cd ~/deployed_apps/future_self
-            docker compose pull $IMAGE
-            IMAGE=$IMAGE docker compose up -d --no-deps --force-recreate
+            cd ~/deployed_apps/futureself-mono
+            docker compose pull
+            API_IMAGE=$API_IMAGE WEB_IMAGE=$WEB_IMAGE docker compose up -d --no-deps --force-recreate
