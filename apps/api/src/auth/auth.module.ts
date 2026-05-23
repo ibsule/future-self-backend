@@ -13,6 +13,6 @@ import { HttpRequestsUtil } from 'src/utils/http.util';
   imports: [TypeOrmModule.forFeature([AuthSession, User]), HttpModule],
   controllers: [AuthController],
   providers: [AuthService, AuthSessionService, HttpRequestsUtil, EmailService],
-  exports: [AuthSessionService]
+  exports: [AuthSessionService],
 })
 export class AuthModule {}

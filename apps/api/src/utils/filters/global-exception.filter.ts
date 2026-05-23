@@ -21,7 +21,7 @@ export default class GlobalExceptionsHandler implements ExceptionFilter {
 
     return response.status(status).json({
       message: message.toString(),
-      error: exception?.response?.error
+      error: exception?.response?.error,
     });
   }
 }
