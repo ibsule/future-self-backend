@@ -17,6 +17,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build:web
 
 FROM base
+# Skip the interactive TTY prompt for removing node_modules
+ENV CI=true 
 COPY --from=prod-deps /app/apps/web/node_modules /app/apps/web/node_modules
 COPY --from=build /app/apps/web/dist /app/apps/web/dist
 EXPOSE 5173
