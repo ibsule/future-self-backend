@@ -12,7 +12,7 @@ import { User } from 'src/user/entities/user.entity';
 import { createJwtToken, decodeJwtToken } from 'src/utils/jwt.utils';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from 'src/email/email.service';
-import { EMAIL_TEMPLATES } from 'src/constants';
+import { EMAIL_TEMPLATES, ENVIRONMENT } from 'src/constants';
 
 @Injectable()
 export class AuthService {
@@ -111,8 +111,17 @@ export class AuthService {
       '15m',
     ); // Reset password token expires in 15 minutes
 
+    const nodeEnv = this.configService.get('NODE_ENVIRONMENT');
+    const frontendLocalUrl = this.configService.get('FRONTEND_LOCAL_URL');
+    const frontendProdUrl = this.configService.get('FRONTEND_PRODUCTION_URL');
+
     const frontendUrl =
-      this.configService.get('FRONTEND_URL', 'http://localhost:5173');
+      nodeEnv === ENVIRONMENT.LOCAL
+        ? frontendLocalUrl
+        : nodeEnv === ENVIRONMENT.PRODUCTION
+          ? frontendProdUrl
+          : null;
+
     const resetUrl = `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(user.email)}`;
 
     const sentEmail = await this.emailService.send({
