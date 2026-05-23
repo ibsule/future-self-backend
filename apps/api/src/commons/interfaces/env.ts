@@ -5,6 +5,7 @@ interface IENV {
   APP_KEY: string;
   ENABLE_RATE_LIMITING: string;
   DONT_SEND_EMAIL: string;
+  FRONTEND_URL: string;
   
   // Redis
   REDIS_HOST: string;
@@ -25,6 +26,4 @@ interface IENV {
   EMAIL_SENDER_EMAIL: string;
   BREVO_API_ENDPOINT: string;
   BREVO_API_KEY: string;
-
-  FRONTEND_URL: string;
 }

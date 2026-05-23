@@ -98,7 +98,7 @@ export function ComposePage() {
     <section>
       <PageHeader
         eyebrow="Compose"
-        title="A letter to your Futureself"
+        title="A letter to your future self"
         subtitle="Plain words. No ornament. Set the hour, seal it, and let time carry it forward."
       />
       <form onSubmit={handleSubmit} className="space-y-10">
