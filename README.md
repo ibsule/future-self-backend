@@ -10,24 +10,68 @@ Most reminder apps are built around tasks and notifications. I wanted something 
 
 Sometimes it's a reflection I want to revisit months later, a message for an important milestone, encouragement before a difficult period, or just context I know I'll forget with time. Futureself is built around that idea: delayed personal communication instead of productivity tooling.
 
-> **Note** This repository is still in active development
-
 ## Prerequisites
 
 - **Node.js** 22.x or current LTS
-- **pnpm** 9.x (`npm install -g pnpm`)
+- **pnpm** 11.x (`npm install -g pnpm`)
 - **PostgreSQL** and **Redis** (local install or your own containers)
 - **Brevo** API key only if you want real email (optional locally)
+- **Docker**
 
-## Setup
+## Production setup
+
+Setup Futureself in production mode in your VPS or locally.
+
+#### Step 1: Create `.env` file from `.env.example`
+
+```bash
+cp .env.example .env
+```
+
+### Step 2 (optional): Provide email credentials
+
+> This step is only required if you want to receive emails. 
+
+Provide the following credentials in `.env`:
+
+```bash
+EMAIL_SENDER_EMAIL= # Obtain from https://app.brevo.com/senders/list
+BREVO_API_KEY= # Obtain from https://app.brevo.com/settings/keys/api
+```
+
+### Step 3: Run
+
+```bash
+docker compose up
+```
+
+***Access your Futureself instance at: `http://localhost:8010`***
+
+> **Note** If you are running Futureself from a VPS, then your instance will be available at `http://<your-vps-host>:8010`
+
+## Development setup
 
 ### 1. Postgres and Redis
 
-Run both on the hosts/ports you'll put in `.env.local`. Defaults below assume `127.0.0.1`.
+The configurations for both Postgres and Redis are located in [./compose.yml](./compose.yml)
+
+#### Run Postgres locally
+
+Run the local instance of Postgres using the following command: 
+
+```bash
+docker compose up futureself-postgres
+```
+
+#### Run Redis locally
+
+Run the local instance of Redis using the following command: 
+
+```bash
+docker compose up futureself-redis
+```
 
 ### 2. Install dependencies
-
-From the repo root:
 
 ```bash
 pnpm install
@@ -35,52 +79,27 @@ pnpm install
 
 This installs dependencies for both `apps/api` and `apps/web` in one shot.
 
-### 3. Backend
+### 3. Configure environment variables
 
-Create `.env.local` in `apps/api/`. Required keys: `apps/api/src/commons/interfaces/env.ts`.
+Create `.env` from `.env.example` with the following command:
 
-```env
-NODE_ENVIRONMENT=local
-APP_PORT=3000
-APP_KEY=your-secret-signing-key-change-me
-ENABLE_RATE_LIMITING=false
-DONT_SEND_EMAIL=true
-
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-REDIS_USER=
-REDIS_PASSWORD=
-
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=future_self
-POSTGRES_HOST=127.0.0.1
-POSTGRES_PORT=5432
-POSTGRES_HOST_DOCKER=postgres
-
-EMAIL_SENDER_NAME=Futureself
-EMAIL_SENDER_EMAIL=noreply@example.com
-BREVO_API_ENDPOINT=https://api.brevo.com/v3
-BREVO_API_KEY=your-brevo-api-key
-
-FRONTEND_URL=http://localhost:5173
+```bash
+cp .env.example .env
 ```
 
-- `DONT_SEND_EMAIL=true` skips Brevo in dev.
-- `FRONTEND_URL` must match where the Vite app runs (CORS).
-- Use a strong `APP_KEY` outside local.
+Update `.env`: 
+- Set `REDIS_HOST=127.0.0.1`
+- Set `POSTGRES_HOST=127.0.0.1`
+- Set `NODE_ENVIRONMENT=local`
+- Set `VITE_NODE_ENVIRONMENT=local`
+- Set `DONT_SEND_EMAIL=true`
 
-### 4. Frontend
+A few things to note:
 
-Create `.env` in `apps/web/` (copy from `apps/web/.env.example`):
+> - Setting `DONT_SEND_EMAIL=true` skips sending emails in local development. If set to false, ensure to provide values for `EMAIL_SENDER_EMAIL` and `BREVO_API_KEY`
+> - Use a strong `APP_KEY` and passwords outside local.
 
-```env
-VITE_API_URL=http://localhost:3000
-```
-
-Must match backend `APP_PORT`.
-
-## Local dev
+### 4. Run
 
 Run both from the repo root:
 
@@ -90,12 +109,15 @@ pnpm dev          # starts both api and web concurrently
 
 Or in separate terminals:
 
-| Terminal | Command         |
-| -------- | --------------- |
-| API      | `pnpm dev:api`  |
-| Web      | `pnpm dev:web`  |
 
-App: [http://localhost:5173](http://localhost:5173) — API on port defined in `APP_PORT`.
+| Terminal | Command        |
+| -------- | -------------- |
+| API      | `pnpm dev:api` |
+| Web      | `pnpm dev:web` |
+
+
+- Web: [http://localhost:5173](http://localhost:5173).
+- API: [http://localhost:5001](http://localhost:5001).
 
 Register, compose a message, pick a future delivery time. With `DONT_SEND_EMAIL=true`, the queue still runs; email is skipped.
 
@@ -103,14 +125,17 @@ Register, compose a message, pick a future delivery time. With `DONT_SEND_EMAIL=
 
 All scripts run from the **repo root** via pnpm:
 
-| Command           | Purpose                              |
-| ----------------- | ------------------------------------ |
-| `pnpm dev`        | Start both api and web               |
-| `pnpm dev:api`    | API dev server with watch            |
-| `pnpm dev:web`    | Vite dev server                      |
-| `pnpm build`      | Production build for both            |
-| `pnpm build:api`  | Production build for api only        |
-| `pnpm build:web`  | Production build for web only        |
-| `pnpm test`       | Run all tests                        |
-| `pnpm lint`       | Lint all packages                    |
-| `pnpm format`     | Format all packages                  |
+
+| Command          | Purpose                       |
+| ---------------- | ----------------------------- |
+| `pnpm dev`       | Start both api and web        |
+| `pnpm dev:api`   | API dev server with watch     |
+| `pnpm dev:web`   | Vite dev server               |
+| `pnpm build`     | Production build for both     |
+| `pnpm build:api` | Production build for api only |
+| `pnpm build:web` | Production build for web only |
+| `pnpm test`      | Run all tests                 |
+| `pnpm lint`      | Lint all packages             |
+| `pnpm format`    | Format all packages           |
+
+

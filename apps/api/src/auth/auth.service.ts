@@ -30,7 +30,7 @@ export class AuthService {
 
     const isMatch = await compareStringAndHash(password, user.password_hash);
 
-    if (!isMatch) throw new BadRequestException('Invalid assword.');
+    if (!isMatch) throw new BadRequestException('Invalid password.');
 
     const sessionId = await this.authSessionService.create({
       userId: user.id,
