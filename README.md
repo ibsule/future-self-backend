@@ -16,7 +16,7 @@ Sometimes it's a reflection I want to revisit months later, a message for an imp
 - **pnpm** 11.x (`npm install -g pnpm`)
 - **PostgreSQL** and **Redis** (local install or your own containers)
 - **Brevo** API key only if you want real email (optional locally)
-- Docker
+- **Docker**
 
 ## Production setup
 
@@ -73,8 +73,6 @@ docker compose up futureself-redis
 
 ### 2. Install dependencies
 
-From the repo root:
-
 ```bash
 pnpm install
 ```
@@ -83,17 +81,22 @@ This installs dependencies for both `apps/api` and `apps/web` in one shot.
 
 ### 3. Configure environment variables
 
-First create `.env` from `.env.example` with the following command:
+Create `.env` from `.env.example` with the following command:
 
 ```bash
 cp .env.example .env
 ```
 
-Then set the value for both `NODE_ENVIRONMENT` and `VITE_NODE_ENVIRONMENT` to `local`
+Update `.env`: 
+- Set `REDIS_HOST=127.0.0.1`
+- Set `POSTGRES_HOST=127.0.0.1`
+- Set `NODE_ENVIRONMENT=local`
+- Set `VITE_NODE_ENVIRONMENT=local`
+- Set `DONT_SEND_EMAIL=true`
 
-A few things to note
+A few things to note:
 
-> - Set `DONT_SEND_EMAIL=true`. This skips Brevo in local development. If set to false, ensure to provide values for `EMAIL_SENDER_EMAIL` and `BREVO_API_KEY`
+> - Setting `DONT_SEND_EMAIL=true` skips sending emails in local development. If set to false, ensure to provide values for `EMAIL_SENDER_EMAIL` and `BREVO_API_KEY`
 > - Use a strong `APP_KEY` and passwords outside local.
 
 ### 4. Run
@@ -114,7 +117,7 @@ Or in separate terminals:
 
 
 - Web: [http://localhost:5173](http://localhost:5173).
-- API: [http://localhost:5173](http://localhost:5001).
+- API: [http://localhost:5001](http://localhost:5001).
 
 Register, compose a message, pick a future delivery time. With `DONT_SEND_EMAIL=true`, the queue still runs; email is skipped.
 
