@@ -20,7 +20,7 @@ services:
     ports:
       - 8010:5173
   
-  postgresdb:
+  futureself-postgres:
     image: postgres:18.3
     container_name: futureself-postgres
     restart: always
@@ -33,7 +33,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql
 
-  redis:
+  futureself-redis:
     image: redis:8.6
     container_name: futureself-redis
     command: redis-server --requirepass please-change-me-GWLq7kqLcWhEkVoZ
